@@ -38,7 +38,7 @@ struct DoubleButtonView: View {
                     buttonBG
                         .cornerRadius(10)
                         .onHover(perform: { hovering in
-                            buttonBG = hovering ? Color.blue.opacity(0.7) : Color.blue
+                            buttonBG = hovering ? Color.accentColor.opacity(0.7) : Color.accentColor
                         })
                     Text(text)
                         .foregroundColor(.white)
@@ -77,6 +77,7 @@ struct EnterPasswordButton: View {
     @Binding var password: String
     @State var buttonBG = Color.accentColor
     var onDone: () -> ()
+    var onSaveFail: () -> () = {}
     @State var invalidPassword = false
     var body: some View {
         HStack {
@@ -97,7 +98,20 @@ struct EnterPasswordButton: View {
             Button {
                 if password != "" {
                     do {
-                        try shellOut(to: "echo \"\(password)\" | sudo -S echo Hi")
+                        try call("echo Hi", p: password)
+                        print("Saving password to keychain, so we don't have to prompt again...")
+                        guard let passwordData = password.data(using: .utf8) else {
+                            print("It doesn't really matter, but the saving failed.")
+                            onSaveFail()
+                            return
+                        }
+                        let keychaintry = KeyChain.save(key: "bensova.Patched-Sur.userpass", data: passwordData)
+                        if keychaintry == noErr {
+                            print("Saved!")
+                        } else {
+                            print("It doesn't really matter, but the saving failed.")
+                            onSaveFail()
+                        }
                         onDone()
                     } catch {
                         invalidPassword = true
@@ -126,6 +140,63 @@ struct EnterPasswordButton: View {
             .buttonStyle(BorderlessButtonStyle())
             .padding(.top, 10)
             .opacity(password == "" ? 0.4 : 1)
+        }.fixedSize()
+        .onAppear {
+            print("Checking for password in keychain...")
+            guard let passwordData = KeyChain.load(key: "bensova.Patched-Sur.userpass") else {
+                print("Not there, so prompting for password.")
+                return
+            }
+            print("Something is in keychain, attemping to decode...")
+            guard let passwordN = String(data: passwordData, encoding: .utf8) else {
+                print("Unable to decode data, so promting for password.")
+                return
+            }
+            print("Decoded password, checking to see if it is still valid...")
+            if (try? call("echo Hi", p: password)) == nil {
+                print("Password is invalid, so promting for password.")
+                return
+            }
+            print("The password is correct, so skipping this prompt.")
+            password = passwordN
+            onDone()
+        }
+    }
+}
+
+struct TextAndButtonView: View {
+    let t: String
+    let b: String
+    let action: () -> ()
+    @State var hovered = false
+    
+    var body: some View {
+        ZStack {
+            Rectangle()
+                .foregroundColor(.secondary)
+                .cornerRadius(10)
+            HStack(spacing: 0) {
+                Text(t)
+                    .padding(6)
+                    .padding(.leading, 4)
+                    .foregroundColor(.white)
+                Button {
+                    action()
+                } label: {
+                    ZStack {
+                        Rectangle()
+                            .foregroundColor(!hovered ? .accentColor : Color.accentColor.opacity(0.7))
+                            .cornerRadius(10)
+                        Text(b)
+                            .padding(6)
+                            .padding(.horizontal, 4)
+                            .foregroundColor(.white)
+                    }.fixedSize()
+                }.buttonStyle(BorderlessButtonStyle())
+                .onHover {
+                    hovered = $0
+                }
+            }
         }.fixedSize()
     }
 }

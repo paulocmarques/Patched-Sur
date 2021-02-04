@@ -53,7 +53,7 @@ struct VolumeSelector: View {
                         }.buttonStyle(BorderlessButtonStyle())
                     }
                 }
-            }.fixedSize()
+            }.frame(minWidth: 450, maxWidth: 450)
             .padding(20)
             HStack {
                 Button {
@@ -109,19 +109,11 @@ struct VolumeSelector: View {
                 .buttonStyle(BorderlessButtonStyle())
                 .padding(.top, 10)
             }
-        }
+        }.frame(minWidth: 500, maxWidth: 500, minHeight: 300, maxHeight: 300)
     }
     
     init(p: Binding<Int>, volume: Binding<String>) {
         self._pro = p
         self._selected = volume
-    }
-}
-
-struct VolumeSelector_Previews: PreviewProvider {
-    static var previews: some View {
-        VolumeSelector(p: .constant(1), volume: .constant(""))
-            .frame(minWidth: 500, maxWidth: 500, minHeight: 300, maxHeight: 300)
-            .background(Color.white)
     }
 }

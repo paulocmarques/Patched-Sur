@@ -14,7 +14,6 @@ struct ContentView: View {
             AllViews()
         }
         .frame(minWidth: 500, maxWidth: 500, minHeight: 300, maxHeight: 300)
-        .background(colorScheme == .dark ? Color.black : Color.white)
     }
 }
 
@@ -29,7 +28,7 @@ struct AllViews : View {
     @State var password = ""
     @State var volume = ""
     @State var overrideinstaller = false
-    @State var releaseTrack = ReleaseTrack.publicbeta
+    @State var releaseTrack = ReleaseTrack.release
     @State var installMethod = InstallMethod.update
     @State var installInfo = nil as InstallAssistant?
     @State var useCurrent = false
@@ -38,7 +37,10 @@ struct AllViews : View {
     var body: some View {
         switch progress {
         case 0:
-            MainView(p: $progress)
+            ZStack {
+                MainView(p: $progress)
+//                EnterPasswordPrompt(password: $password, show: .constant(true))
+            }
         case 1:
             MacCompatibility(p: $progress)
         case 2:
