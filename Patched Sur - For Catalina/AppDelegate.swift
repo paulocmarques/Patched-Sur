@@ -20,7 +20,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Create the window and set the content view.
         window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 500, height: 300),
-            styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
+            styleMask: [.titled, .closable, .miniaturizable, .fullSizeContentView],
             backing: .buffered, defer: false)
         window.isReleasedWhenClosed = true
         window.center()
@@ -46,4 +46,13 @@ class AppInfo {
         let micropatcher = micropatchers.filter { $0.patcher <= Int(Bundle.main.infoDictionary!["CFBundleVersion"] as! String)! }.last!
         return micropatcher.version
     }()
+}
+
+extension AnyTransition {
+
+    static var moveAway: AnyTransition {
+        return .asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading))
+
+    }
+
 }

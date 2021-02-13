@@ -39,6 +39,7 @@ struct CreateInstallMedia: View {
                         .onAppear {
                             DispatchQueue.global(qos: .background).async {
                                 do {
+                                    print("Phrasing for diskID...")
                                     let diskUtilList = try call("diskutil list /Volumes/\(volume.replacingOccurrences(of: " ", with: "\\ "))")
                                     var diskStart = diskUtilList.split(separator: "\n")[2]
                                     diskStart.removeFirst("   0:      GUID_partition_scheme                        *32.0 GB    ".count)
@@ -63,6 +64,10 @@ struct CreateInstallMedia: View {
                         .onAppear {
                             DispatchQueue.global(qos: .background).async {
                                 do {
+                                    print("Disabling bad Spotlight Indexing...")
+                                    _ = try? call("mdutil -i off /Volumes/Install\\ macOS\\ Big\\ Sur", p: password)
+                                    print("Stopping mds...")
+                                    _ = try? call("killall mds", p: password)
                                     let reasonForActivity = "Reason for activity" as CFString
                                     var assertionID: IOPMAssertionID = 0
                                     var success = IOPMAssertionCreateWithName( kIOPMAssertionTypeNoDisplaySleep as CFString,
@@ -70,6 +75,9 @@ struct CreateInstallMedia: View {
                                                                                 reasonForActivity,
                                                                                 &assertionID )
                                     if success == kIOReturnSuccess {
+                                        print("Stopping mds again...")
+                                        _ = try? call("killall mds", p: password)
+                                        print("Starting createinstallmedia...")
                                         if (try? shellOut(to: "[[ -d /Applications/Install\\ macOS\\ Big\\ Sur\\ Beta.app ]]")) != nil {
                                             try call("\(installer?.replacingOccurrences(of: " ", with: "\\ ") ?? "/Applications/Install\\ macOS\\ Big\\ Sur\\ Beta.app")/Contents/Resources/createinstallmedia --volume /Volumes/Install\\ macOS\\ Big\\ Sur --nointeraction", p: password)
                                         } else {
@@ -81,6 +89,7 @@ struct CreateInstallMedia: View {
                                         downloadStatus = "Unable to pull system attention."
                                     }
                                 } catch {
+                                    _ = try? call("mdutil -i off", p: password)
                                     downloadStatus = error.localizedDescription
                                 }
                             }
@@ -100,6 +109,7 @@ struct CreateInstallMedia: View {
                                     try call("/Volumes/Patched-Sur/.patch-usb.sh", p: password)
                                     downloadStatus = "Injecting Full App..."
                                 } catch {
+                                    _ = try? call("mdutil -i on /Volumes/Install\\ macOS\\ Big\\ Sur", p: password)
                                     downloadStatus = error.localizedDescription
                                 }
                             }
@@ -118,8 +128,12 @@ struct CreateInstallMedia: View {
                                 do {
                                     _ = try call("rm -rf \"/Applications/Patched Sur.app\"")
                                     try call("cp -rf \"/Volumes/Patched-Sur/.fullApp.app\" \"/Applications/Patched Sur.app\"")
-                                    p = 8
+                                    _ = try? call("sudo mdutil -i on /Volumes/Install\\ macOS\\ Big\\ Sur", p: password)
+                                    withAnimation {
+                                        p = 8
+                                    }
                                 } catch {
+                                    _ = try? call("mdutil -i on /Volumes/Install\\ macOS\\ Big\\ Sur", p: password)
                                     downloadStatus = error.localizedDescription
                                 }
                             }
