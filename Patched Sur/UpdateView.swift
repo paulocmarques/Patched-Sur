@@ -18,13 +18,14 @@ struct UpdateView: View {
     @State var skipAppCheck = false
     @State var installInfo = nil as InstallAssistant?
     @State var packageLocation = "~/.patched-sur/InstallAssistant.pkg"
+    @State var password = ""
     let buildNumber: String
     var body: some View {
         ZStack {
             if progress == 0 || progress == 2 {
                 VStack {
                     Text("Software Update")
-                        .font(.title)
+                        .font(.title2)
                         .bold()
                     Spacer()
                 }.padding(25)
@@ -45,11 +46,13 @@ struct UpdateView: View {
             case 3:
                 DownloadView(p: $progress, installInfo: $installInfo)
             case 4:
-                StartInstallView(installerPath: $packageLocation)
+                StartInstallView(password: $password, installerPath: $packageLocation)
             case 6:
                 DisableAMFIView()
             case 7:
-                HaxDownloadView(installInfo: installInfo)
+                HaxDownloadView(installInfo: installInfo, password: $password, p: $progress)
+            case 8:
+                NotificationsView(p: $progress).font(.caption)
             default:
                 VStack {
                     Text("Uh-oh! Something went wrong going through the software update steps.\nError 1x\(progress)")
@@ -91,24 +94,6 @@ struct UpdateCheckerView: View {
                 .progressViewStyle(LinearProgressViewStyle())
                 .padding(.horizontal)
                 .onAppear {
-                    print("Checking to see if we are running startosinstall...")
-                    if AppInfo.startingInstall {
-                        print("We are!")
-                        if let infoData = UserDefaults.standard.string(forKey: "installInfo") {
-                            guard let info = try? InstallAssistant(infoData) else {
-                                print("This really should not have happened 2...")
-                                checkingForUpdatesText = "Failed to Get Install Inforamtion 2"
-                                return
-                            }
-                            installInfo = info
-                            AppInfo.usePredownloaded = UserDefaults.standard.bool(forKey: "preDownloaded")
-                            progress = 3
-                        } else {
-                            print("This really should not have happened...")
-                            checkingForUpdatesText = "Failed to Get Install Inforamtion"
-                        }
-                        return
-                    }
                     DispatchQueue.global(qos: .background).async {
                         do {
                             print("Checking for updates to Patched Sur...")
@@ -123,13 +108,7 @@ struct UpdateCheckerView: View {
                             }
                             print("No updates found or user choose to skip the app update check.")
                             print("Figuring out what update track to use...")
-                            if var trackFile = try? File(path: "~/.patched-sur/track.txt").readAsString() {
-                                if trackFile.count > 0 {
-                                    trackFile.removeLast()
-                                }
-                                print("Found track file with contents \(trackFile).")
-                                track = ReleaseTrack(rawValue: trackFile) ?? .release
-                            }
+                            track = ReleaseTrack(rawValue: UserDefaults.standard.string(forKey: "UpdateTrack") ?? "Release") ?? .release
                             print("Using update track \(track).")
                             print("Pinging installer list to find the latest updates...")
                             installers = try InstallAssistants(fromURL:  URL(string: "https://bensova.github.io/patched-sur/installers/\(track == .developer ? "Developer" : (track == .publicbeta ? "Public" : "Release")).json")!)

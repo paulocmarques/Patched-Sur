@@ -35,28 +35,26 @@ struct UpdateStatusView: View {
                             .font(.caption)
                     }
                 }
-                TextAndButtonView(t: "Learn How To", b: "Update") {
-//                    print("Check for AMFI...")
-//                    var bootargs = ""
-//                    do {
-//                        bootargs = try call("nvram boot-args")
-//                    } catch {
-//                        print("Failed to check boot args. This is unexpected, and should be impossible.")
-//                        presentAlert(m: "Failed to check boot-args.", i: "Patched Sur failed to check your boot args, which should be impossible. If the boot-args value did not exist, you wouldn't be able to boot macOS, so that couldn't be an issue.\n\n\(error.localizedDescription)")
-//                        return
-//                    }
-//                    bootargs.removeFirst("boot-args    ".count)
-//                    if bootargs.contains("amfi_get_out_of_my_way=1") {
-//                        print("AMFI is off, continuing...")
-//                        p = 7
-//                    } else {
-//                        print("AMFI is not set, warning user.")
-//                        alert = .init(title: Text("AMFI Appears to Be On"), message: Text("Since the installer checks to see if the update supports your Mac, Patched Sur needs to inject a dylib into it so that the installer doesn't care about the incompatibilty. However, this can only be done with AMFI off, so Patched Sur will quickly turn this off then restart your Mac, so then you can continue with updating."), primaryButton: .default(Text("Continue"), action: {
-//                            p = 6
-//                        }), secondaryButton: .cancel())
-//                    }
-                    print("Redirecting to Patched Sur docs website...")
-                    NSWorkspace.shared.open(URL(string: "https://bensova.gitbook.io/big-sur/postinstall-after-upgrade/updating-macos")!)
+                TextAndButtonView(t: "Start the", b: "macOS Update!") {
+                    print("Check for AMFI...")
+                    var bootargs = ""
+                    do {
+                        bootargs = try call("nvram boot-args")
+                    } catch {
+                        print("Failed to check boot args. This is unexpected, and should be impossible.")
+                        presentAlert(m: "Failed to check boot-args.", i: "Patched Sur failed to check your boot args, which should be impossible. If the boot-args value did not exist, you wouldn't be able to boot macOS, so that couldn't be an issue.\n\n\(error.localizedDescription)")
+                        return
+                    }
+                    bootargs.removeFirst("boot-args    ".count)
+                    if bootargs.contains("amfi_get_out_of_my_way=1") {
+                        print("AMFI is off, continuing...")
+                        p = 7
+                    } else {
+                        print("AMFI is not set, warning user.")
+                        alert = .init(title: Text("AMFI Appears to Be On"), message: Text("Since the installer checks to see if the update supports your Mac, Patched Sur needs to inject a dylib into it so that the installer doesn't care about the incompatibilty. However, this can only be done with AMFI off, so Patched Sur will quickly turn this off then restart your Mac, so then you can continue with updating."), primaryButton: .default(Text("Continue"), action: {
+                            p = 6
+                        }), secondaryButton: .cancel())
+                    }
                 }.font(Font.caption.bold())
             } else {
                 VStack(alignment: .leading) {
@@ -73,13 +71,12 @@ struct UpdateStatusView: View {
             }.font(.caption)
             ZStack {
                 Rectangle()
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color.accentColor.opacity(0.3))
                     .cornerRadius(10)
                 HStack(spacing: 0) {
                     Text("Update Track")
                         .padding(6)
                         .padding(.leading, 4)
-                        .foregroundColor(.white)
                     Button {
                         withAnimation {
                             showMoreTracks.toggle()
@@ -100,19 +97,10 @@ struct UpdateStatusView: View {
                     }
                     if showMoreTracks {
                         Button {
-                            do {
-                                try call("echo '\(releaseTrack != .release ? "Release" : (releaseTrack != .publicbeta ? "Public Beta" : "Developer"))' > ~/.patched-sur/track.txt")
-                                showMoreTracks = false
-                                releaseTrack = releaseTrack != .release ? .release : (releaseTrack != .publicbeta ? .publicbeta : .developer)
-                                p = 0
-                            } catch {
-                                showMoreTracks = false
-                                let errorAlert = NSAlert()
-                                errorAlert.alertStyle = .critical
-                                errorAlert.informativeText = error.localizedDescription
-                                errorAlert.messageText = "Unable to Switch Release Track"
-                                errorAlert.runModal()
-                            }
+                            UserDefaults.standard.setValue(releaseTrack != .release ? "Release" : (releaseTrack != .publicbeta ? "Public Beta" : "Developer"), forKey: "UpdateTrack")
+                            showMoreTracks = false
+                            releaseTrack = releaseTrack != .release ? .release : (releaseTrack != .publicbeta ? .publicbeta : .developer)
+                            p = 0
                         } label: {
                             ZStack {
                                 Rectangle()
@@ -129,19 +117,10 @@ struct UpdateStatusView: View {
                         }
                         .padding(.horizontal, 5)
                         Button {
-                            do {
-                                try call("echo '\(releaseTrack != .developer ? "Developer" : (releaseTrack != .publicbeta ? "Public Beta" : "Release"))' > ~/.patched-sur/track.txt")
-                                showMoreTracks = false
-                                releaseTrack = releaseTrack != .developer ? .developer : (releaseTrack != .publicbeta ? .publicbeta : .release)
-                                p = 0
-                            } catch {
-                                showMoreTracks = false
-                                let errorAlert = NSAlert()
-                                errorAlert.alertStyle = .critical
-                                errorAlert.informativeText = error.localizedDescription
-                                errorAlert.messageText = "Unable to Switch Release Track"
-                                errorAlert.runModal()
-                            }
+                            UserDefaults.standard.setValue(releaseTrack != .developer ? "Developer" : (releaseTrack != .publicbeta ? "Public Beta" : "Release"), forKey: "UpdateTrack")
+                            showMoreTracks = false
+                            releaseTrack = releaseTrack != .developer ? .developer : (releaseTrack != .publicbeta ? .publicbeta : .release)
+                            p = 0
                         } label: {
                             ZStack {
                                 Rectangle()
@@ -229,6 +208,9 @@ struct UpdateStatusView: View {
 //                    }
 //                }
 //            }.fixedSize().font(.caption)
+            TextAndButtonView(t: "Configure", b: "Notifications") {
+                p = 8
+            }.font(.caption)
             TextAndButtonView(t: "Go", b: "Back") {
                 p = -1
             }.font(.caption)

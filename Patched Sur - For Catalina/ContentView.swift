@@ -7,6 +7,10 @@
 
 import SwiftUI
 
+extension UserDefaults {
+    static let data = UserDefaults(suiteName: "52RY4VB4F6.bensova.Patched-Sur-Data")!
+}
+
 struct ContentView: View {
     @Environment(\.colorScheme) var colorScheme
     var body: some View {
