@@ -7,7 +7,10 @@ Patched Sur is a UI patcher for macOS Big Sur, designed to make it easy to run m
 ## Compatibility
 To see if your Mac is supported [click here](https://bensova.gitbook.io/big-sur/supported-macs).
 
-**TURN OFF FILEVAULT**
+## FileVault Warning 
+**You must Turn FileVault Off before using Patched Sur**
+
+The patcher shouldn't let you upgrade anyway, but it's good to make sure it's off.
 
 ## How do I use Patched Sur?
 
@@ -20,7 +23,7 @@ To see if your Mac is supported [click here](https://bensova.gitbook.io/big-sur/
    - How much functionality you will get out of macOS once the patching process is complete
    - How the patcher works, and what it does to your Mac
 
-**4.** Next, you can choose what update track you would like to update with. `Release` is the default, but you can also choose `Public Beta` and `Developer Beta` if you want one of the beta tracks. (Note: Apple does not always release InstallAssistant.pkgs for the beta tracks, this means you might be unable to get certian betas.)
+**4.** Next, you can choose what update track you would like to update with. `Release` is the default, but you can also choose `Public Beta` and `Developer Beta` if you want one of the beta tracks. (Note: Apple does not always release InstallAssistant.pkgs for the beta tracks, this means you might be unable to get certain betas.)
 
 **5.** Then, you can select whether you want to update macOS from Catalina to Big Sur (or Big Sur to Big Sur if you are switching from a different patcher) or do a clean install of Big Sur (currently unavailable).
 
@@ -34,7 +37,7 @@ To see if your Mac is supported [click here](https://bensova.gitbook.io/big-sur/
 
 **10.** Reboot your computer, but immediately start holding down the `Option/Alt` key as soon as your Mac turns on.
 
-**11.** Select the __yellow__ EFI Boot drive, (if there are multiple unplug and replug in your drive and select the EFI Boot that disappeared and reappeared).  Then, your Mac will quickly turn off, so turn it back on while, again, holding down `Option/Alt`. Then, select Install macOS Big Sur Beta.
+**11.** Select the __yellow__ EFI Boot drive, (if there are multiple unplug and replug in your drive and select the EFI Boot that disappeared and reappeared).  Then, your Mac will quickly turn off, so turn it back on while, again, holding down `Option/Alt`. Then, select Install macOS Big Sur.
 
 **12.** Once the installer boots, select reinstall macOS and agree to the Terms and Conditions. Then, select the drive you want to install Big Sur onto, (it should be the same drive you ran the patcher on).
 
@@ -44,9 +47,9 @@ To see if your Mac is supported [click here](https://bensova.gitbook.io/big-sur/
 
 #### How do I choose a my own installer?
 
-To choose a different installer that you already have downloaded, click `View Other Versions`. Then, click `Find an Installer` and navigate to the InstallAssistant.pkg or Install macOS Big Sur Beta.app file you would like to use.
+To choose a different installer that you already have downloaded, click `View Other Versions`. Then, click `Find an Installer` and navigate to the InstallAssistant.pkg or Install macOS Big Sur.app file you would like to use.
 
-#### How would I update macOS? (Not in current release)
+#### How would I update macOS? (Starting in v0.1.0+)
 
 To update macOS, follow the steps below.
 
@@ -60,4 +63,12 @@ To update macOS, follow the steps below.
 
 **5.** Enjoy the latest version of macOS!
 
-Note: Apple does not always release InstallAssistant.pkgs for the beta tracks, this means you might be unable to get certian betas.
+Note: Apple does not always release InstallAssistant.pkgs for the beta tracks and some minor updates, this means you might be unable to get certain upates.
+
+## Support
+
+I am a living, breathing human, so don't expect me to respond right away to everything. However, if you need support with the patcher, feel free to open an issue or discussion here (please search the issue list before making a new one) or use one of the links below!
+
+[r/BigSurPatcher Subreddit](https://www.reddit.com/r/BigSurPatcher/)
+
+[Unsupported Macs Discord](https://discord.com/invite/XbbWAsE) (#bensova-patcher)
